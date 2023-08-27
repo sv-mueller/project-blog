@@ -10,12 +10,16 @@ import CodeSnippet from "@/components/CodeSnippet/CodeSnippet";
 import dynamic from "next/dynamic";
 import Spinner from "@/components/Spinner/Spinner";
 
+import { notFound } from "next/navigation";
+
 export async function generateMetadata({ params }) {
-	const { frontmatter } = await loadBlogPost(params.postSlug);
+	const post = await loadBlogPost(params.postSlug);
+
+	if (post === "not-found") return { status: 404 };
 
 	return {
-		title: `${frontmatter.title}’ • ${BLOG_TITLE}`,
-		description: frontmatter.abstract,
+		title: `${post.frontmatter.title}’ • ${BLOG_TITLE}`,
+		description: post.frontmatter.abstract,
 	};
 }
 
@@ -36,7 +40,16 @@ const LazyLoadedCircularColorsDemo = dynamic(
 );
 
 async function BlogPost({ params }) {
-	const { content, frontmatter } = await loadBlogPost(params.postSlug);
+	const post = await loadBlogPost(params.postSlug);
+
+	console.log("post", post);
+
+	if (post === "not-found") {
+		notFound();
+	}
+
+	const { content, frontmatter } = post;
+
 	return (
 		<article className={styles.wrapper}>
 			<BlogHero
