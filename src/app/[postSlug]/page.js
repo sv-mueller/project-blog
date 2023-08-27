@@ -7,7 +7,6 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { loadBlogPost } from "@/helpers/file-helpers";
 import { BLOG_TITLE } from "@/constants";
 import CodeSnippet from "@/components/CodeSnippet/CodeSnippet";
-import DivisionGroupsDemo from "@/components/DivisionGroupsDemo/DivisionGroupsDemo";
 import dynamic from "next/dynamic";
 import Spinner from "@/components/Spinner/Spinner";
 
@@ -28,6 +27,14 @@ const LazyLoadedDivisionGroupsDemo = dynamic(
 	}
 );
 
+const LazyLoadedCircularColorsDemo = dynamic(
+	() => import("@/components/CircularColorsDemo/CircularColorsDemo"),
+	{
+		ssr: false,
+		loading: Spinner,
+	}
+);
+
 async function BlogPost({ params }) {
 	const { content, frontmatter } = await loadBlogPost(params.postSlug);
 	return (
@@ -42,6 +49,7 @@ async function BlogPost({ params }) {
 					components={{
 						pre: CodeSnippet,
 						DivisionGroupsDemo: LazyLoadedDivisionGroupsDemo,
+						CircularColorsDemo: LazyLoadedCircularColorsDemo,
 					}}
 				/>
 			</div>
